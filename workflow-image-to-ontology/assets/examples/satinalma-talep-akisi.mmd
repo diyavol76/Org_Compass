@@ -1,0 +1,31 @@
+%% Auto-generated from the workflow graph. Compare visually with the source image.
+flowchart TD
+  subgraph n_lane_talep_eden["Talep Eden"]
+    n_baslangic(["Talep Başla"])
+    n_talep_olustur["Satın alma talebi oluştur"]
+    n_talep_duzelt["Talebi düzelt"]
+  end
+  subgraph n_lane_yonetici["Yönetici"]
+    n_talep_incele["Talebi incele"]
+    n_onay_karari{"X Onaylandı mı?"}
+  end
+  subgraph n_lane_satin_alma["Satın Alma"]
+    n_paralel_bolme{{"+"}}
+    n_teklif_topla["Teklif topla"]
+    n_butce_kontrol["Bütçe kontrolü yap"]
+    n_paralel_birlesme{{"+"}}
+    n_siparis_ver["Sipariş ver"]
+    n_bitis((("Bitiş")))
+  end
+  n_baslangic --> n_talep_olustur
+  n_talep_olustur --> n_talep_incele
+  n_talep_incele --> n_onay_karari
+  n_onay_karari -->|"Evet"| n_paralel_bolme
+  n_onay_karari -->|"Hayır"| n_talep_duzelt
+  n_talep_duzelt --> n_talep_incele
+  n_paralel_bolme --> n_teklif_topla
+  n_paralel_bolme --> n_butce_kontrol
+  n_teklif_topla --> n_paralel_birlesme
+  n_butce_kontrol --> n_paralel_birlesme
+  n_paralel_birlesme --> n_siparis_ver
+  n_siparis_ver --> n_bitis

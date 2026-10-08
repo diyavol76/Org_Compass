@@ -1,0 +1,187 @@
+@prefix wfo: <https://orgcompass.example/ontology/workflow#> .
+@prefix pko: <https://w3id.org/pko#> .
+@prefix p-plan: <http://purl.org/net/p-plan#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <https://orgcompass.example/workflow/satinalma-talep-akisi#> .
+# NOTE: orgcompass.example is a placeholder namespace; replace it with your organization's before publishing.
+
+:process a wfo:Process, pko:Procedure, p-plan:Plan ;
+    rdfs:label "Satın alma talebi onay ve sipariş akışı"@tr ;
+    wfo:sourceImage "satinalma-talep-akisi.png" ;
+    wfo:notation "swimlane" ;
+    wfo:arrowSemantics "flow" ;
+    wfo:reviewStatus "draft" ;
+    wfo:confidence 0.9 ;
+    pko:hasStep :talep-olustur, :talep-duzelt, :talep-incele, :teklif-topla, :butce-kontrol, :siparis-ver .
+
+:talep-eden a wfo:Participant, prov:Agent ; rdfs:label "Talep Eden"@tr ; wfo:participantKind "lane" .
+:yonetici a wfo:Participant, prov:Agent ; rdfs:label "Yönetici"@tr ; wfo:participantKind "lane" .
+:satin-alma a wfo:Participant, prov:Agent ; rdfs:label "Satın Alma"@tr ; wfo:participantKind "lane" .
+
+:baslangic a wfo:StartEvent ;
+    rdfs:label "Talep Başla"@tr ;
+    wfo:inProcess :process ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 ;
+    wfo:performedBy :talep-eden .
+:talep-olustur a wfo:Task, pko:Step, p-plan:Step ;
+    rdfs:label "Satın alma talebi oluştur"@tr ;
+    wfo:inProcess :process ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 ;
+    wfo:performedBy :talep-eden .
+:talep-duzelt a wfo:Task, pko:Step, p-plan:Step ;
+    rdfs:label "Talebi düzelt"@tr ;
+    wfo:inProcess :process ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 ;
+    wfo:performedBy :talep-eden .
+:talep-incele a wfo:Task, pko:Step, p-plan:Step ;
+    rdfs:label "Talebi incele"@tr ;
+    wfo:inProcess :process ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 ;
+    wfo:performedBy :yonetici .
+:onay-karari a wfo:ExclusiveGateway ;
+    rdfs:label "Onaylandı mı?"@tr ;
+    wfo:inProcess :process ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 ;
+    wfo:performedBy :yonetici .
+:paralel-bolme a wfo:ParallelGateway ;
+    wfo:inProcess :process ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 ;
+    wfo:performedBy :satin-alma .
+:teklif-topla a wfo:Task, pko:Step, p-plan:Step ;
+    rdfs:label "Teklif topla"@tr ;
+    wfo:inProcess :process ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 ;
+    wfo:performedBy :satin-alma .
+:butce-kontrol a wfo:Task, pko:Step, p-plan:Step ;
+    rdfs:label "Bütçe kontrolü yap"@tr ;
+    wfo:inProcess :process ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 ;
+    wfo:performedBy :satin-alma .
+:paralel-birlesme a wfo:ParallelGateway ;
+    wfo:inProcess :process ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 ;
+    wfo:performedBy :satin-alma .
+:siparis-ver a wfo:Task, pko:Step, p-plan:Step ;
+    rdfs:label "Sipariş ver"@tr ;
+    wfo:inProcess :process ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 ;
+    wfo:performedBy :satin-alma .
+:bitis a wfo:EndEvent ;
+    rdfs:label "Bitiş"@tr ;
+    wfo:inProcess :process ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 ;
+    wfo:performedBy :satin-alma .
+
+:e01 a wfo:Transition ;
+    wfo:flowType "sequence" ;
+    wfo:from :baslangic ;
+    wfo:to :talep-olustur ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 .
+:e02 a wfo:Transition ;
+    wfo:flowType "sequence" ;
+    wfo:from :talep-olustur ;
+    wfo:to :talep-incele ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 .
+:e03 a wfo:Transition ;
+    wfo:flowType "sequence" ;
+    wfo:from :talep-incele ;
+    wfo:to :onay-karari ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 .
+:e04 a wfo:Transition ;
+    wfo:flowType "sequence" ;
+    wfo:from :onay-karari ;
+    wfo:to :paralel-bolme ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 ;
+    wfo:condition "Evet"@tr .
+:e05 a wfo:Transition ;
+    wfo:flowType "sequence" ;
+    wfo:from :onay-karari ;
+    wfo:to :talep-duzelt ;
+    wfo:status "observed" ;
+    wfo:confidence 0.85 ;
+    wfo:condition "Hayır"@tr .
+:e06 a wfo:Transition ;
+    wfo:flowType "sequence" ;
+    wfo:from :talep-duzelt ;
+    wfo:to :talep-incele ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 .
+:e07 a wfo:Transition ;
+    wfo:flowType "sequence" ;
+    wfo:from :paralel-bolme ;
+    wfo:to :teklif-topla ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 .
+:e08 a wfo:Transition ;
+    wfo:flowType "sequence" ;
+    wfo:from :paralel-bolme ;
+    wfo:to :butce-kontrol ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 .
+:e09 a wfo:Transition ;
+    wfo:flowType "sequence" ;
+    wfo:from :teklif-topla ;
+    wfo:to :paralel-birlesme ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 .
+:e10 a wfo:Transition ;
+    wfo:flowType "sequence" ;
+    wfo:from :butce-kontrol ;
+    wfo:to :paralel-birlesme ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 .
+:e11 a wfo:Transition ;
+    wfo:flowType "sequence" ;
+    wfo:from :paralel-birlesme ;
+    wfo:to :siparis-ver ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 .
+:e12 a wfo:Transition ;
+    wfo:flowType "sequence" ;
+    wfo:from :siparis-ver ;
+    wfo:to :bitis ;
+    wfo:status "observed" ;
+    wfo:confidence 0.95 .
+
+:baslangic wfo:precedes :talep-olustur .
+:talep-olustur wfo:precedes :talep-incele .
+:talep-olustur pko:nextStep :talep-incele .
+:talep-incele p-plan:isPrecededBy :talep-olustur .
+:talep-incele wfo:precedes :onay-karari .
+:onay-karari wfo:precedes :paralel-bolme .
+:onay-karari wfo:precedes :talep-duzelt .
+:talep-duzelt wfo:precedes :talep-incele .
+:talep-duzelt pko:nextStep :talep-incele .
+:talep-incele p-plan:isPrecededBy :talep-duzelt .
+:paralel-bolme wfo:precedes :teklif-topla .
+:paralel-bolme wfo:precedes :butce-kontrol .
+:teklif-topla wfo:precedes :paralel-birlesme .
+:butce-kontrol wfo:precedes :paralel-birlesme .
+:paralel-birlesme wfo:precedes :siparis-ver .
+:siparis-ver wfo:precedes :bitis .
+
+:talep-duzelt wfo:dependsOn :talep-incele .
+:talep-incele wfo:dependsOn :talep-olustur .
+:talep-incele wfo:dependsOn :talep-duzelt .
+:teklif-topla wfo:dependsOn :talep-incele .
+:butce-kontrol wfo:dependsOn :talep-incele .
+:siparis-ver wfo:dependsOn :teklif-topla .
+:siparis-ver wfo:dependsOn :butce-kontrol .
+:bitis wfo:dependsOn :siparis-ver .

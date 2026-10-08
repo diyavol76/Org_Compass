@@ -68,6 +68,7 @@ Load only the reference you need for the current mode.
 Distillation is an offline, long-running pass. The goal is the **reasoning**, not a summary: how experts interpret the domain, what they prioritize, how they resolve ambiguity.
 
 1. Inventory sources in `sources/` (immutable, never edit). Record each in `sources/INDEX.md`.
+   Sources that are workflow or process diagram images: run the companion skill `workflow-image-to-ontology` first and store its output under `sources/workflows/<slug>/` (graph JSON, spec `.md`, `.ttl`), then distill from the spec.
 2. Partition by **information density and expected usage frequency**:
    - High-density and frequently referenced: distill into wiki files (positions, decision frameworks, boundary examples, strategic interpretations).
    - Sparse and situational (specs, historical decision records, niche external material): leave in `sources/` and serve through search. List them in `sources/INDEX.md` with a one-line "when to look here".

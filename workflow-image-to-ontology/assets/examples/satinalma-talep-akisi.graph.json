@@ -1,0 +1,310 @@
+{
+  "schema_version": "1.0",
+  "meta": {
+    "id": "satinalma-talep-akisi",
+    "title": "Satın alma talebi onay ve sipariş akışı",
+    "source_image": "satinalma-talep-akisi.png",
+    "notation": "swimlane",
+    "arrow_semantics": "flow",
+    "language": "tr",
+    "domain": "procurement",
+    "description": "Talep eden bir satın alma talebi oluşturur, yönetici onaylar veya düzeltme ister; onaydan sonra satın alma teklif toplama ve bütçe kontrolünü paralel yürütür, ardından sipariş verir.",
+    "extractor": "workflow-image-to-ontology (manual example)",
+    "extracted_on": "2026-10-08",
+    "review_status": "draft",
+    "overall_confidence": 0.9,
+    "image_quality": "good",
+    "image_notes": "'Hayır' etiketi karar elmasının altında, geri dönüş okunun yakınında duruyor; hangi oka ait olduğu konuma göre çıkarıldı."
+  },
+  "lanes": [
+    {
+      "id": "talep-eden",
+      "label": "Talep Eden",
+      "kind": "lane"
+    },
+    {
+      "id": "yonetici",
+      "label": "Yönetici",
+      "kind": "lane"
+    },
+    {
+      "id": "satin-alma",
+      "label": "Satın Alma",
+      "kind": "lane"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "baslangic",
+      "label": "Talep Başla",
+      "label_status": "legible",
+      "type": "start",
+      "confidence": 0.95,
+      "status": "observed",
+      "evidence": {
+        "text_as_read": "Talep Başla",
+        "location": "top-left of lane 'Talep Eden', green circle"
+      },
+      "lane": "talep-eden"
+    },
+    {
+      "id": "talep-olustur",
+      "label": "Satın alma talebi oluştur",
+      "label_status": "legible",
+      "type": "task",
+      "confidence": 0.95,
+      "status": "observed",
+      "evidence": {
+        "text_as_read": "Satın alma talebi oluştur",
+        "location": "Talep Eden lane, right of start"
+      },
+      "lane": "talep-eden"
+    },
+    {
+      "id": "talep-duzelt",
+      "label": "Talebi düzelt",
+      "label_status": "legible",
+      "type": "task",
+      "confidence": 0.95,
+      "status": "observed",
+      "evidence": {
+        "text_as_read": "Talebi düzelt",
+        "location": "Talep Eden lane, bottom-left"
+      },
+      "lane": "talep-eden"
+    },
+    {
+      "id": "talep-incele",
+      "label": "Talebi incele",
+      "label_status": "legible",
+      "type": "task",
+      "confidence": 0.95,
+      "status": "observed",
+      "evidence": {
+        "text_as_read": "Talebi incele",
+        "location": "Yönetici lane, left"
+      },
+      "lane": "yonetici"
+    },
+    {
+      "id": "onay-karari",
+      "label": "Onaylandı mı?",
+      "label_status": "legible",
+      "type": "xor_gateway",
+      "confidence": 0.95,
+      "status": "observed",
+      "evidence": {
+        "text_as_read": "Onaylandı mı?",
+        "location": "Yönetici lane, diamond right of 'Talebi incele'"
+      },
+      "lane": "yonetici"
+    },
+    {
+      "id": "paralel-bolme",
+      "label": "",
+      "label_status": "none",
+      "type": "and_gateway",
+      "confidence": 0.95,
+      "status": "observed",
+      "evidence": {
+        "text_as_read": "",
+        "location": "Satın Alma lane, first diamond marked +"
+      },
+      "lane": "satin-alma",
+      "notes": "Diamond contains only '+' (AND)."
+    },
+    {
+      "id": "teklif-topla",
+      "label": "Teklif topla",
+      "label_status": "legible",
+      "type": "task",
+      "confidence": 0.95,
+      "status": "observed",
+      "evidence": {
+        "text_as_read": "Teklif topla",
+        "location": "Satın Alma lane, lower branch"
+      },
+      "lane": "satin-alma"
+    },
+    {
+      "id": "butce-kontrol",
+      "label": "Bütçe kontrolü yap",
+      "label_status": "legible",
+      "type": "task",
+      "confidence": 0.95,
+      "status": "observed",
+      "evidence": {
+        "text_as_read": "Bütçe kontrolü yap",
+        "location": "Satın Alma lane, upper branch"
+      },
+      "lane": "satin-alma"
+    },
+    {
+      "id": "paralel-birlesme",
+      "label": "",
+      "label_status": "none",
+      "type": "and_gateway",
+      "confidence": 0.95,
+      "status": "observed",
+      "evidence": {
+        "text_as_read": "",
+        "location": "Satın Alma lane, second diamond marked +"
+      },
+      "lane": "satin-alma",
+      "notes": "Diamond contains only '+' (AND)."
+    },
+    {
+      "id": "siparis-ver",
+      "label": "Sipariş ver",
+      "label_status": "legible",
+      "type": "task",
+      "confidence": 0.95,
+      "status": "observed",
+      "evidence": {
+        "text_as_read": "Sipariş ver",
+        "location": "Satın Alma lane, right of join"
+      },
+      "lane": "satin-alma"
+    },
+    {
+      "id": "bitis",
+      "label": "Bitiş",
+      "label_status": "legible",
+      "type": "end",
+      "confidence": 0.95,
+      "status": "observed",
+      "evidence": {
+        "text_as_read": "Bitiş",
+        "location": "far right, double red circle"
+      },
+      "lane": "satin-alma"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e01",
+      "source": "baslangic",
+      "target": "talep-olustur",
+      "type": "sequence",
+      "confidence": 0.95,
+      "status": "observed",
+      "line_style": "solid"
+    },
+    {
+      "id": "e02",
+      "source": "talep-olustur",
+      "target": "talep-incele",
+      "type": "sequence",
+      "confidence": 0.95,
+      "status": "observed",
+      "line_style": "solid"
+    },
+    {
+      "id": "e03",
+      "source": "talep-incele",
+      "target": "onay-karari",
+      "type": "sequence",
+      "confidence": 0.95,
+      "status": "observed",
+      "line_style": "solid"
+    },
+    {
+      "id": "e04",
+      "source": "onay-karari",
+      "target": "paralel-bolme",
+      "type": "sequence",
+      "confidence": 0.95,
+      "status": "observed",
+      "line_style": "solid",
+      "condition": "Evet"
+    },
+    {
+      "id": "e05",
+      "source": "onay-karari",
+      "target": "talep-duzelt",
+      "type": "sequence",
+      "confidence": 0.85,
+      "status": "observed",
+      "line_style": "solid",
+      "condition": "Hayır",
+      "notes": "Label sits below the diamond near the loop-back arrow; assigned by proximity."
+    },
+    {
+      "id": "e06",
+      "source": "talep-duzelt",
+      "target": "talep-incele",
+      "type": "sequence",
+      "confidence": 0.95,
+      "status": "observed",
+      "line_style": "solid"
+    },
+    {
+      "id": "e07",
+      "source": "paralel-bolme",
+      "target": "teklif-topla",
+      "type": "sequence",
+      "confidence": 0.95,
+      "status": "observed",
+      "line_style": "solid"
+    },
+    {
+      "id": "e08",
+      "source": "paralel-bolme",
+      "target": "butce-kontrol",
+      "type": "sequence",
+      "confidence": 0.95,
+      "status": "observed",
+      "line_style": "solid"
+    },
+    {
+      "id": "e09",
+      "source": "teklif-topla",
+      "target": "paralel-birlesme",
+      "type": "sequence",
+      "confidence": 0.95,
+      "status": "observed",
+      "line_style": "solid"
+    },
+    {
+      "id": "e10",
+      "source": "butce-kontrol",
+      "target": "paralel-birlesme",
+      "type": "sequence",
+      "confidence": 0.95,
+      "status": "observed",
+      "line_style": "solid"
+    },
+    {
+      "id": "e11",
+      "source": "paralel-birlesme",
+      "target": "siparis-ver",
+      "type": "sequence",
+      "confidence": 0.95,
+      "status": "observed",
+      "line_style": "solid"
+    },
+    {
+      "id": "e12",
+      "source": "siparis-ver",
+      "target": "bitis",
+      "type": "sequence",
+      "confidence": 0.95,
+      "status": "observed",
+      "line_style": "solid"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "q1",
+      "about": [
+        "e05"
+      ],
+      "question": "'Hayır' etiketi düzeltme dalına mı ait? Etiket okun üstünde değil, elmasın altında duruyor.",
+      "candidates": [
+        "Hayır -> Talebi düzelt (varsayılan okuma)",
+        "Etiket başka bir okun"
+      ],
+      "severity": "minor"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+@prefix wfo:    <https://orgcompass.example/ontology/workflow#> .
+@prefix pko:    <https://w3id.org/pko#> .
+@prefix p-plan: <http://purl.org/net/p-plan#> .
+@prefix prov:   <http://www.w3.org/ns/prov#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+# Workflow vocabulary for graphs extracted from diagram images.
+# Deliberately small: control flow is kept as explicit gateways + reified transitions (BPMN-like),
+# and Task/Process are aligned to PKO / P-Plan / PROV-O so existing procedural-knowledge tooling can read them.
+# orgcompass.example is a PLACEHOLDER namespace: replace it with your organization's before publishing.
+
+<https://orgcompass.example/ontology/workflow> a owl:Ontology ;
+    rdfs:label "Workflow vocabulary (diagram extraction)"@en ;
+    owl:imports <https://w3id.org/pko> , <http://purl.org/net/p-plan> , <http://www.w3.org/ns/prov-o> .
+
+# ---- Process and participants -------------------------------------------
+wfo:Process a owl:Class ; rdfs:subClassOf pko:Procedure , p-plan:Plan ;
+    skos:definition "A workflow as depicted in one diagram."@en .
+wfo:Participant a owl:Class ; rdfs:subClassOf prov:Agent ;
+    skos:definition "A pool, lane, team, role, system or phase that groups steps; the party responsible for them."@en .
+
+# ---- Flow elements ------------------------------------------------------
+wfo:FlowElement a owl:Class .
+wfo:Step a owl:Class ; rdfs:subClassOf wfo:FlowElement , pko:Step , p-plan:Step .
+wfo:Task a owl:Class ; rdfs:subClassOf wfo:Step .
+wfo:Subprocess a owl:Class ; rdfs:subClassOf wfo:Step .
+wfo:Event a owl:Class ; rdfs:subClassOf wfo:FlowElement .
+wfo:StartEvent a owl:Class ; rdfs:subClassOf wfo:Event .
+wfo:EndEvent a owl:Class ; rdfs:subClassOf wfo:Event .
+wfo:IntermediateEvent a owl:Class ; rdfs:subClassOf wfo:Event .
+wfo:Gateway a owl:Class ; rdfs:subClassOf wfo:FlowElement .
+wfo:ExclusiveGateway a owl:Class ; rdfs:subClassOf wfo:Gateway ; skos:definition "XOR: exactly one outgoing branch is taken (split) or exactly one arrives (merge)."@en .
+wfo:ParallelGateway a owl:Class ; rdfs:subClassOf wfo:Gateway ; skos:definition "AND: all branches are taken (split) or all must arrive (join)."@en .
+wfo:InclusiveGateway a owl:Class ; rdfs:subClassOf wfo:Gateway ; skos:definition "OR: one or more branches."@en .
+wfo:EventBasedGateway a owl:Class ; rdfs:subClassOf wfo:Gateway .
+wfo:Connector a owl:Class ; rdfs:subClassOf wfo:FlowElement ; skos:definition "Off-page / on-page reference marker."@en .
+wfo:Artifact a owl:Class .
+wfo:DataObject a owl:Class ; rdfs:subClassOf wfo:Artifact .
+wfo:DataStore a owl:Class ; rdfs:subClassOf wfo:Artifact .
+wfo:Document a owl:Class ; rdfs:subClassOf wfo:Artifact .
+wfo:ExternalSystem a owl:Class ; rdfs:subClassOf wfo:Artifact .
+wfo:Annotation a owl:Class .
+
+# Reified arrow: keeps drawn direction, type and condition queryable.
+wfo:Transition a owl:Class ; skos:definition "An arrow as drawn in the diagram."@en .
+
+# ---- Relations ----------------------------------------------------------
+wfo:inProcess a owl:ObjectProperty ; rdfs:range wfo:Process .
+wfo:performedBy a owl:ObjectProperty ; rdfs:range wfo:Participant .
+wfo:partOf a owl:ObjectProperty .
+wfo:precedes a owl:ObjectProperty ;
+    owl:inverseOf wfo:isPrecededBy ;
+    skos:definition "Directly follows in control flow (gateways included as nodes), after normalising arrow direction."@en .
+wfo:isPrecededBy a owl:ObjectProperty ; rdfs:subPropertyOf p-plan:isPrecededBy .
+wfo:dependsOn a owl:ObjectProperty ;
+    skos:definition "Step-level dependency derived by collapsing gateways. Semantics of ALL/ANY are in the markdown spec and reified transitions."@en .
+wfo:sendsMessageTo a owl:ObjectProperty .
+wfo:reads a owl:ObjectProperty .
+wfo:writes a owl:ObjectProperty .
+wfo:from a owl:ObjectProperty ; rdfs:domain wfo:Transition .
+wfo:to a owl:ObjectProperty ; rdfs:domain wfo:Transition .
+
+# ---- Datatype properties ------------------------------------------------
+wfo:flowType a owl:DatatypeProperty ; rdfs:domain wfo:Transition ; skos:definition "sequence | message | data | dependency | association"@en .
+wfo:condition a owl:DatatypeProperty ; rdfs:domain wfo:Transition .
+wfo:isDefault a owl:DatatypeProperty ; rdfs:range xsd:boolean .
+wfo:status a owl:DatatypeProperty ; skos:definition "observed (drawn) | inferred (needs inferenceBasis)"@en .
+wfo:inferenceBasis a owl:DatatypeProperty .
+wfo:confidence a owl:DatatypeProperty ; rdfs:range xsd:decimal .
+wfo:sourceImage a owl:DatatypeProperty .
+wfo:notation a owl:DatatypeProperty .
+wfo:arrowSemantics a owl:DatatypeProperty ; skos:definition "flow | depends_on | unknown: how arrows in the source diagram are read."@en .
+wfo:reviewStatus a owl:DatatypeProperty .
+wfo:participantKind a owl:DatatypeProperty .
+wfo:usesSystem a owl:DatatypeProperty .

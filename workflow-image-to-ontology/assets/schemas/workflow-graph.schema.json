@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "workflow-image-to-ontology/workflow-graph",
+  "title": "Workflow graph extracted from a diagram image",
+  "description": "Canonical, lossless record of what a workflow/process diagram shows. Edges are stored AS DRAWN; meta.arrow_semantics says how to read arrows. Everything not visible in the image is status=inferred with an inference_basis, or an open_question.",
+  "type": "object",
+  "required": ["schema_version", "meta", "lanes", "nodes", "edges", "open_questions"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "meta": {
+      "type": "object",
+      "required": ["id", "title", "source_image", "notation", "arrow_semantics", "language", "review_status", "overall_confidence"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "title": {"type": "string", "minLength": 1},
+        "source_image": {"type": "string", "minLength": 1},
+        "notation": {"enum": ["bpmn", "flowchart", "uml-activity", "swimlane", "dependency-graph", "pipeline", "unknown"]},
+        "arrow_semantics": {"enum": ["flow", "depends_on", "unknown"]},
+        "language": {"type": "string", "minLength": 2},
+        "domain": {"type": "string"},
+        "description": {"type": "string"},
+        "extractor": {"type": "string"},
+        "extracted_on": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+        "review_status": {"enum": ["draft", "reviewed"]},
+        "reviewed_by": {"type": "string"},
+        "overall_confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "image_quality": {"enum": ["good", "fair", "poor"]},
+        "image_notes": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "lanes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "kind"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "label": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["pool", "lane", "team", "role", "system", "phase", "group"]},
+          "parent": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "label_status", "type", "confidence", "status"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "label": {"type": "string"},
+          "label_status": {"enum": ["legible", "partial", "unreadable", "none"]},
+          "type": {"enum": ["start", "end", "task", "subprocess", "event", "xor_gateway", "and_gateway", "or_gateway", "event_gateway", "data_object", "data_store", "document", "external_system", "connector", "annotation"]},
+          "lane": {"type": "string"},
+          "description": {"type": "string"},
+          "system": {"type": "string"},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "status": {"enum": ["observed", "inferred"]},
+          "inference_basis": {"type": "string"},
+          "evidence": {
+            "type": "object",
+            "properties": {
+              "text_as_read": {"type": "string"},
+              "location": {"type": "string"},
+              "bbox": {"type": "array", "items": {"type": "number", "minimum": 0, "maximum": 1}, "minItems": 4}
+            },
+            "additionalProperties": false
+          },
+          "notes": {"type": "string"}
+        },
+        "allOf": [
+          {"if": {"properties": {"status": {"const": "inferred"}}}, "then": {"required": ["inference_basis"]}}
+        ],
+        "additionalProperties": false
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "source", "target", "type", "confidence", "status"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "source": {"type": "string"},
+          "target": {"type": "string"},
+          "type": {"enum": ["sequence", "message", "data", "dependency", "association"]},
+          "label": {"type": "string"},
+          "condition": {"type": "string"},
+          "is_default": {"type": "boolean"},
+          "line_style": {"enum": ["solid", "dashed", "dotted", "thick"]},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "status": {"enum": ["observed", "inferred"]},
+          "inference_basis": {"type": "string"},
+          "notes": {"type": "string"}
+        },
+        "allOf": [
+          {"if": {"properties": {"status": {"const": "inferred"}}}, "then": {"required": ["inference_basis"]}}
+        ],
+        "additionalProperties": false
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "about", "question", "severity"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^q[0-9]+$"},
+          "about": {"type": "array", "items": {"type": "string"}},
+          "question": {"type": "string", "minLength": 1},
+          "candidates": {"type": "array", "items": {"type": "string"}},
+          "severity": {"enum": ["blocking", "important", "minor"]},
+          "resolution": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

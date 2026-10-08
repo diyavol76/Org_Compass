@@ -1,0 +1,22 @@
+digraph G {
+  rankdir=LR; fontname="Helvetica"; node [fontname="Helvetica", fontsize=12]; edge [fontname="Helvetica", fontsize=11];
+  subgraph cluster_a { label="Talep Eden"; style=rounded;
+    start [label="Talep\nBaşla", shape=circle, style=filled, fillcolor="#c8e6c9"];
+    t1 [label="Satın alma\ntalebi oluştur", shape=box, style="rounded"];
+    t2 [label="Talebi\ndüzelt", shape=box, style="rounded"]; }
+  subgraph cluster_b { label="Yönetici"; style=rounded;
+    t3 [label="Talebi\nincele", shape=box, style="rounded"];
+    g1 [label="Onaylandı\nmı?", shape=diamond]; }
+  subgraph cluster_c { label="Satın Alma"; style=rounded;
+    g2 [label="+", shape=diamond];
+    t4 [label="Teklif\ntopla", shape=box, style="rounded"];
+    t5 [label="Bütçe\nkontrolü yap", shape=box, style="rounded"];
+    g3 [label="+", shape=diamond];
+    t6 [label="Sipariş\nver", shape=box, style="rounded"];
+    end [label="Bitiş", shape=doublecircle, style=filled, fillcolor="#ffcdd2"]; }
+  start->t1->t3->g1;
+  g1->g2 [label="Evet"];
+  g1->t2 [label="Hayır"];
+  t2->t3;
+  g2->t4; g2->t5; t4->g3; t5->g3; g3->t6->end;
+}
