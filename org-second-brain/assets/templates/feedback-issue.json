@@ -1,0 +1,13 @@
+{
+  "id": "iss-0001-example",
+  "status": "open",
+  "source_run": "run-example",
+  "expert_signal": "Verbatim or faithful paraphrase of the expert point.",
+  "attribution": "knowledge_gap",
+  "attribution_evidence": {
+    "files_read": ["knowledge/positions/pos-example-topic.md"],
+    "quote": "(absent) no mention of the case",
+    "reasoning": "The position had no boundary example for this case, so the agent could not have reached the expert's conclusion."
+  },
+  "targets": ["pos-example-topic"]
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "org-second-brain/kb-config",
+  "title": "kb.config.json",
+  "type": "object",
+  "required": ["domain", "risk_tier", "paths", "budgets", "improvement"],
+  "properties": {
+    "domain": {"type": "string", "minLength": 1},
+    "language": {"type": "string"},
+    "risk_tier": {"enum": ["low", "medium", "high"]},
+    "paths": {
+      "type": "object",
+      "required": ["knowledge", "recipes", "sources", "eval", "feedback"],
+      "properties": {
+        "knowledge": {"type": "string"}, "recipes": {"type": "string"}, "sources": {"type": "string"},
+        "eval": {"type": "string"}, "feedback": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "budgets": {
+      "type": "object",
+      "required": ["file_soft_tokens", "file_hard_tokens"],
+      "properties": {
+        "file_soft_tokens": {"type": "integer", "minimum": 100},
+        "file_hard_tokens": {"type": "integer", "minimum": 100},
+        "total_tokens": {"type": "integer", "minimum": 1000},
+        "stale_review_days": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "checkpoint_policy": {"enum": ["every_step", "phase_boundary", "final_only"]},
+    "improvement": {
+      "type": "object",
+      "required": ["max_compile_retries", "regression_samples"],
+      "properties": {
+        "max_compile_retries": {"type": "integer", "minimum": 0, "maximum": 10},
+        "regression_samples": {"type": "integer", "minimum": 1, "maximum": 10},
+        "required_reviewers": {"type": "integer", "minimum": 1, "maximum": 5}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

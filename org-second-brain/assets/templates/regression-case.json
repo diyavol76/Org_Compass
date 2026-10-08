@@ -1,0 +1,13 @@
+{
+  "id": "seed-example-case",
+  "title": "Example benchmark case",
+  "origin": "seed",
+  "domain_tags": ["example"],
+  "input": "Scenario text exactly as a user would submit it.",
+  "expected": {
+    "must_include": ["Conclusion that position pos-example-topic applies", "Cites the boundary condition"],
+    "must_not_include": ["Claims the activity is out of scope"]
+  },
+  "knowledge_under_test": ["pos-example-topic"],
+  "checkpoint_script": [{"step": "s2", "response": "confirm"}]
+}

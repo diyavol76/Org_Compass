@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "org-second-brain/feedback-issue",
+  "title": "Diagnosed feedback issue",
+  "type": "object",
+  "required": ["id", "status", "source_run", "expert_signal", "attribution", "attribution_evidence", "targets"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^iss-[0-9]{4}(-[a-z0-9]+)*$"},
+    "status": {"enum": ["open", "compiling", "evaluating", "ready_for_review", "landed", "rejected", "needs_human_discussion"]},
+    "source_run": {"type": "string"},
+    "expert_signal": {"type": "string", "minLength": 1},
+    "attribution": {"enum": ["knowledge_gap", "recipe_flaw", "ambiguity"]},
+    "attribution_evidence": {
+      "type": "object",
+      "required": ["files_read", "reasoning"],
+      "properties": {
+        "files_read": {"type": "array", "items": {"type": "string"}},
+        "quote": {"type": "string"},
+        "reasoning": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "targets": {"type": "array", "items": {"type": "string"}},
+    "expert_names": {"type": "array", "items": {"type": "string"}},
+    "linked_run": {"type": "string"},
+    "resolution_note": {"type": "string"}
+  },
+  "allOf": [
+    {"if": {"properties": {"attribution": {"const": "ambiguity"}}}, "then": {"properties": {"status": {"enum": ["needs_human_discussion", "rejected", "landed"]}}}}
+  ],
+  "additionalProperties": false
+}

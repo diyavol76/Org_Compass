@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "org-second-brain/improvement-run",
+  "title": "Improvement run audit trail",
+  "type": "object",
+  "required": ["run_id", "issues", "edits", "lint", "review", "replay", "regression", "independence", "outcome"],
+  "properties": {
+    "run_id": {"type": "string"},
+    "issues": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "impact_analysis": {"type": "object"},
+    "edits": {"type": "array", "items": {"type": "object", "required": ["file", "from_version", "to_version", "summary"],
+      "properties": {"file": {"type": "string"}, "from_version": {"type": "integer"}, "to_version": {"type": "integer"}, "summary": {"type": "string"}}, "additionalProperties": false}},
+    "lint": {"type": "object", "required": ["exit_code"], "properties": {"exit_code": {"type": "integer"}, "errors": {"type": "integer"}, "warnings": {"type": "integer"}}},
+    "review": {"type": "object", "required": ["verdict"], "properties": {"verdict": {"enum": ["approve", "changes_required"]}, "findings": {"type": "array", "items": {"type": "string"}}}},
+    "replay": {"type": "object", "required": ["verdict"], "properties": {"verdict": {"enum": ["pass", "fail"]}, "judge_evidence": {"type": "string"}}},
+    "regression": {"type": "object", "required": ["cases_run", "failures"], "properties": {"cases_run": {"type": "integer"}, "failures": {"type": "array", "items": {"type": "string"}}, "samples_per_case": {"type": "integer"}}},
+    "retries": {"type": "integer", "minimum": 0},
+    "independence": {"enum": ["full", "degraded"]},
+    "proposed_regression_case": {"type": "string"},
+    "outcome": {"enum": ["ready_for_review", "needs_human_discussion", "landed", "rejected"]}
+  },
+  "additionalProperties": false
+}

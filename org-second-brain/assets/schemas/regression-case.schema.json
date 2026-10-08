@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "org-second-brain/regression-case",
+  "title": "Benchmark / regression case",
+  "type": "object",
+  "required": ["id", "title", "origin", "input", "expected"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^(seed|reg)-[a-z0-9]+(-[a-z0-9]+)*$"},
+    "title": {"type": "string"},
+    "origin": {"type": "string"},
+    "domain_tags": {"type": "array", "items": {"type": "string"}},
+    "input": {"type": "string", "minLength": 1},
+    "expected": {
+      "type": "object",
+      "required": ["must_include"],
+      "properties": {
+        "must_include": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "must_not_include": {"type": "array", "items": {"type": "string"}},
+        "escalation": {"type": "string"},
+        "reference_answer": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "knowledge_under_test": {"type": "array", "items": {"type": "string"}},
+    "checkpoint_script": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step", "response"],
+        "properties": {"step": {"type": "string"}, "response": {"enum": ["confirm", "correct", "redirect"]}, "text": {"type": "string"}},
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

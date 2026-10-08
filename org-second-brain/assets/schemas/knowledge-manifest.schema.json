@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "org-second-brain/knowledge-manifest",
+  "title": "Knowledge manifest of one run",
+  "type": "object",
+  "required": ["run_id", "started_at", "router_recipe", "loads"],
+  "properties": {
+    "run_id": {"type": "string"},
+    "started_at": {"type": "string"},
+    "router_recipe": {"type": "string"},
+    "input_summary": {"type": "string"},
+    "loads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["recipe", "step", "file", "used_for"],
+        "properties": {
+          "recipe": {"type": "string"},
+          "step": {"type": "string", "pattern": "^s[0-9]+$"},
+          "file": {"type": "string"},
+          "version": {"type": "integer"},
+          "used_for": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "checkpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["recipe", "step", "response"],
+        "properties": {
+          "recipe": {"type": "string"}, "step": {"type": "string"},
+          "response": {"enum": ["confirm", "correct", "redirect"]}, "text": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "escalations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["recipe", "step", "reason"],
+        "properties": {"recipe": {"type": "string"}, "step": {"type": "string"}, "reason": {"type": "string"}, "resolution": {"type": "string"}},
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

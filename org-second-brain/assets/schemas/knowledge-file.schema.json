@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "org-second-brain/knowledge-file",
+  "title": "Knowledge file frontmatter",
+  "type": "object",
+  "required": ["id", "type", "title", "status", "owner", "version", "depends_on", "referenced_by", "last_reviewed"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^(pos|tax|rt|gw)-[a-z0-9]+(-[a-z0-9]+)*$"},
+    "type": {"enum": ["position", "taxonomy", "routing", "gateway"]},
+    "title": {"type": "string", "minLength": 1},
+    "status": {"enum": ["draft", "active", "deprecated"]},
+    "owner": {"type": "string", "minLength": 1},
+    "version": {"type": "integer", "minimum": 1},
+    "applies_when": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "depends_on": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "referenced_by": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "routes_to": {"type": "array", "items": {"type": "string"}},
+    "sources": {"type": "array", "items": {"type": "string"}},
+    "token_budget": {"type": "integer", "minimum": 100},
+    "last_reviewed": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"}
+  },
+  "allOf": [
+    {"if": {"properties": {"type": {"enum": ["position", "gateway"]}}}, "then": {"required": ["applies_when"]}},
+    {"if": {"properties": {"type": {"const": "routing"}}}, "then": {"required": ["routes_to"]}},
+    {"if": {"properties": {"type": {"const": "position"}}}, "then": {"required": ["sources"]}}
+  ],
+  "additionalProperties": false
+}

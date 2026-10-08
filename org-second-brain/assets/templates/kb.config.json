@@ -1,0 +1,24 @@
+{
+  "domain": "example-domain",
+  "language": "en",
+  "risk_tier": "high",
+  "paths": {
+    "knowledge": "knowledge",
+    "recipes": "recipes",
+    "sources": "sources",
+    "eval": "eval",
+    "feedback": "feedback"
+  },
+  "budgets": {
+    "file_soft_tokens": 1500,
+    "file_hard_tokens": 3000,
+    "total_tokens": 60000,
+    "stale_review_days": 180
+  },
+  "checkpoint_policy": "every_step",
+  "improvement": {
+    "max_compile_retries": 3,
+    "regression_samples": 3,
+    "required_reviewers": 2
+  }
+}
